@@ -1,0 +1,27 @@
+Dear Reviewer,
+
+Thank you for providing the feedback. I tried to tweak ‘threshold’, ‘min_line_len’, and ‘max_line_gap’, and removing the condition where the slope has to be bigger than 0.3, as set in my first submission. Here’s the challenge that took most of my time.
+
+
+At around 12th second in ‘yellow.mp4’, a horizontal line approaches, and my code would apply a highlighted marker on this line, although quite briefly. I tried tweaking the ‘threshold’, ’min_line_len’ and ‘max_line_gap’ in hopes of getting rid of it. Some parameter sets will work, for example, 
+threshold = 120
+min_line_len = 200
+max_line_gap = 400
+
+However, with this set, the right lane in yellow.mp4 will be jittering.
+(Also through trials, it seems the threshold cannot exceed 100, otherwise it would fail the test on ‘solidYellowCurve.jpg’, leaving the right lane unmarked.)
+
+Then I pondered on what I was trying to accomplish by tweaking these parameters. I was trying to find a delicate balance in these 3 parameters so that the edges on the solid or dotted lanes will be captured, whereas any other edges, not fitting our conceptual model of left lane + right lane will be filtered out. Through the trial and errors, it occurs to me that our car (or any real car) will this random mark, or any other marks, that bear the same length or curvature as at least some of the segments in the left or right lanes our model is built to capture. I also tried to tweak the thresholds in function canny, to see if I can get our gray image to be oblivious to this horizontal mark in the first place. But when I took a closer look at that mark in the original video, it seems to bear the same brightness as some of the segments in the lanes. Even if I did succeed in this example, there will be stray marks on the road that are of a similar graphical resemblance to the lanes. 
+
+This is when I realized maybe this is not what we are trying to solve with this simple model, for the simple fact that random marks do occur, and they may fit the profile of lane edges, as defined by the way we used in this model. That said, I am curious to get some feedback to see if there happens to be a parameter set that solves the test cases at hand. 
+
+Some further thoughts on this model. Recently I drove on one snowy evening. My eyes couldn’t make out where the lanes were even though this was my daily commute. My algorithm will immediately fail when the road is covered by snow. But let’s leave that situation out for a while. The challenge on that evening was the reflections of the head lights of upcoming cars. They created a bright area in which the lane marks fell. This is far more frequent to happen on the road. Human eyes can sometimes figure out which are light beams and which are lane marks. But this algorithm would not do the job. What I did in that drive was I followed the tail lights of the car in front of me and kept watching the upcoming cars from the other direction. 
+
+Regarding the initial feedback:”it is important to note here that optimizing the Hough parameters will provide you with similar results (sometimes better) even when the "draw line" function is simple. Think of it in terms of computations, changing a parameter setting is in most cases much more efficient than adding another condition.” I would agree that the slope condition that I made was somewhat arbitrary. And if the car starts to spin on the road, this rule would prevent the car from getting back on track. I think a better approach is to provide more context to the car so that it can judge its relative positions to the surroundings.
+
+In this resubmission, I removed the condition of slope, and used this set:
+threshold = 80
+min_line_len = 120
+max_line_gap = 300
+
+It works with all the test images, white.mp4, and majority of yellow.mp4, except for the horizontal mark at ~12th second, and another one at the end.
